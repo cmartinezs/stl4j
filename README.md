@@ -1,8 +1,9 @@
 # STL4J: A Simple Task Library For Java
 STL4J is **A Simple Task library for Java** and gives you a base to be able to execute tasks in a simple way,
 whether they are individual, group and/or chain.
-[![0.1.0-alpha.2](https://jitpack.io/v/cmartinezs/stl4j.svg)]
-(https://jitpack.io/#cmartinezs/stl4j)
+
+[![](https://jitpack.io/v/cmartinezs/stl4j.svg)](https://jitpack.io/#cmartinezs/stl4j)
+
 ## Installation
 Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J** via [**JitPack**](https://jitpack.io/)
 1. Add JitPack repository
@@ -19,7 +20,7 @@ Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J
 <dependency>
     <groupId>com.github.cmartinezs</groupId>
     <artifactId>stl4j</artifactId>
-    <version>0.1.0-alpha.2</version>
+    <version>v0.1.0-alpha.2</version>
 </dependency>
 ```
 ## Usage
