@@ -1,59 +1,87 @@
 package cl.cmartinezs.stl4j.task;
 
-import cl.cmartinezs.stl4j.task.exception.TaskException;
-import lombok.Getter;
-import lombok.Setter;
+import cl.cmartinezs.stl4j.task.utils.consumer.TaskConsumerFactory;
+import cl.cmartinezs.stl4j.task.utils.exception.TaskException;
+import cl.cmartinezs.stl4j.task.utils.function.TaskExceptionFunctionFactory;
+import cl.cmartinezs.stl4j.task.utils.predicate.TaskPredicateFactory;
+import cl.cmartinezs.stl4j.task.utils.supplier.BooleanSupplierFactory;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An abstract implementation of a task
+ *
+ * @since 0.1.0
+ * @author Carlos
+ * @version 1.0
  */
 @Slf4j
+@RequiredArgsConstructor
 public abstract class AbstractTask implements Task {
-    @Getter
-    protected final String name;
-    @Getter
-    @Setter
-    protected TaskStatus status;
-    @Setter
-    private boolean throwOnError;
 
-    protected AbstractTask(String name) {
-        Objects.requireNonNull(name, "The name is required");
-        this.name = name;
-        this.status = TaskStatus.CREATED;
-    }
+    @Getter @NonNull
+    private final String name;
+
+    @Getter @Setter @NonNull
+    private TaskStatus status = TaskStatus.CREATED;
+
+    @Setter(AccessLevel.PROTECTED) @NonNull
+    private transient BooleanSupplier self = BooleanSupplierFactory._true();
+
+    @Setter(onMethod=@__({@Override})) @NonNull
+    private transient Predicate<Task> throwOnError = TaskPredicateFactory._false();
+
+    @Setter(onMethod=@__({@Override})) @NonNull
+    private transient Function<Task, TaskException> exceptionOnError = TaskExceptionFunctionFactory.task();
+
+    @Setter(onMethod=@__({@Override})) @NonNull
+    private transient Consumer<Task> error = TaskConsumerFactory.empty();
+
+    @Setter(onMethod=@__({@Override})) @NonNull
+    private transient Consumer<Task> success = TaskConsumerFactory.empty();
 
     @Override
     public void execute() throws TaskException {
-        AbstractTask.log.debug("{}: Iniciando tarea", getName());
+        log.debug("{}: Starting task", getName());
         this.setStatus(TaskStatus.EXECUTING);
-        if(this.executeSelf()){
+        if(this.onSelf()){
+            log.debug("{}: Success task", this.getName());
             this.setStatus(TaskStatus.SUCCESS);
             this.onSuccess();
         } else {
+            log.debug("{}: Failed task", this.getName());
             this.setStatus(TaskStatus.FAILED);
             this.onError();
-            if (this.throwOnError) {
-                this.exceptionOnError();
+            if (this.throwOnError()) {
+                log.debug("{}: Throw exception task", this.getName());
+                throw this.exceptionOnError();
             }
         }
-        AbstractTask.log.debug("{}: Finalizando tarea", this.getName());
+        log.debug("{}: Finishing task", this.getName());
     }
 
-    protected void exceptionOnError() throws TaskException {
-        throw new TaskException(this.getName() + ": La ejecución ha finalizado con error. Se lanza exception");
+    private boolean throwOnError() {
+        return this.throwOnError.test(this);
     }
 
-    protected abstract boolean executeSelf() throws TaskException;
-
-    protected void onError() {
-        AbstractTask.log.debug("{}: Ejecución finalizada con error", this.getName());
+    private TaskException exceptionOnError()  {
+        return exceptionOnError.apply(this);
     }
 
-    protected void onSuccess() {
-        AbstractTask.log.debug("{}: Ejecución realizada correctamente", this.getName());
+    private void onError() {
+        this.error.accept(this);
+    }
+
+    private void onSuccess() {
+        this.success.accept(this);
+    }
+
+    private boolean onSelf() {
+        return this.self.getAsBoolean();
     }
 }

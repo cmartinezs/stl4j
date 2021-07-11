@@ -1,9 +1,13 @@
 package cl.cmartinezs.stl4j.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StreamUtils {
     public static class Breaker {
         private boolean shouldBreak = false;

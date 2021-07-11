@@ -5,10 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cl.cmartinezs</groupId>
-    <artifactId>simpletasklibrary4j</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>Task Library 4 J</name>
-    <description>A Simple Task Library For Java</description>
+    <artifactId>stl4j</artifactId>
+    <version>0.1.0-alpha.2</version>
+    <name>A Simple Task Library 4 J</name>
+    <description>A simple task library for Java gives you a base to be able to execute tasks in a simple way,
+        whether they are individual, group and / or chain</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
