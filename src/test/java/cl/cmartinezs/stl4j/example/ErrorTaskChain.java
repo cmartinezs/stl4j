@@ -1,15 +1,19 @@
 package cl.cmartinezs.stl4j.example;
 
+import cl.cmartinezs.stl4j.task.TaskStatus;
 import cl.cmartinezs.stl4j.task.chain.TaskChain;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ErrorTaskChain extends TaskChain {
+    private final BooleanTask booleanTask;
     public ErrorTaskChain(String name) {
         super(name);
-    }
-
-    @Override
-    protected boolean executeSelf() {
-        System.out.println(getName() + ": Yo soy una tarea Bye Task");
-        return false;
+        this.booleanTask = new BooleanTask(String.format("%s", name), false);
+        this.setSelf(() -> {
+            log.debug("{}: I'm a {} task", getName(), getClass().getSimpleName());
+            booleanTask.execute();
+            return TaskStatus.SUCCESS.equals(booleanTask.getStatus());
+        });
     }
 }

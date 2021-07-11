@@ -2,88 +2,113 @@ package cl.cmartinezs.stl4j.task.chain;
 
 import cl.cmartinezs.stl4j.task.AbstractTask;
 import cl.cmartinezs.stl4j.task.Task;
-import cl.cmartinezs.stl4j.task.exception.TaskException;
+import cl.cmartinezs.stl4j.task.utils.consumer.TaskExceptionConsumerFactory;
+import cl.cmartinezs.stl4j.task.utils.exception.TaskException;
 import cl.cmartinezs.stl4j.task.TaskStatus;
+import cl.cmartinezs.stl4j.task.utils.predicate.TaskPredicateFactory;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @Slf4j
 public abstract class TaskChain extends AbstractTask {
     @Getter
-    private Task next;
+    @Setter(AccessLevel.PRIVATE)
+    private Task nextTask;
 
-    @Getter
-    @Setter
-    private boolean propagateChainException;
+    @Setter @NonNull
+    private transient Predicate<Task> propagateChainException = TaskPredicateFactory._false();
 
-    @Getter
-    @Setter
-    private boolean failOnReplaceActualNextTask;
+    @Setter @NonNull
+    private transient Predicate<Task> failOnReplaceActualNextTask = TaskPredicateFactory._false();
 
-    @Getter
-    @Setter
-    private boolean executeNext;
+    @Setter @NonNull
+    private transient Predicate<Task> executeNext = TaskPredicateFactory._true();
+
+    @Setter @NonNull
+    private transient Consumer<TaskException> catchChainTaskException = TaskExceptionConsumerFactory.empty();
 
     protected TaskChain(String taskName) {
         super(taskName);
-        this.executeNext = true;
+        this.setSuccess(task -> log.debug("{}: Execution successful", task.getName()));
+        this.setError(task -> log.debug("{}: Execution failed", task.getName()));
     }
 
-    public TaskChain setNext(Task next) throws TaskException {
-        if(next == null) {
-            throw new IllegalArgumentException(getName() + ": La siguiente tarea no puede ser nula");
-        }
+    public TaskChain assignNextTask(@NonNull Task nextTask) throws TaskException {
+        sameTaskVerification(nextTask);
+        failOnReplaceActualNextTask();
+        taskChainVerification(nextTask);
 
-        if(this == next) {
-            throw new IllegalArgumentException(getName() + ": La siguiente tarea no puede ser esta misma");
-        }
-
-        if(this.next != null && isFailOnReplaceActualNextTask()){
-            throw new TaskException(getName() + ": No está permitido reemplazar la siguiente tarea ya asignada");
-        }
-
-        if (this.next != null && next instanceof TaskChain) {
-            ((TaskChain)next).setNext(this.next);
-        }
-        next.setStatus(TaskStatus.WAITING);
-        this.next = next;
+        nextTask.setStatus(TaskStatus.WAITING);
+        this.setNextTask(nextTask);
         return this;
+    }
+
+    private void sameTaskVerification(Task nextTask) {
+        if(this == nextTask) {
+            throw new IllegalArgumentException(String.format("%s: The next task cannot be this same", this.getName()));
+        }
+    }
+
+    private void taskChainVerification(Task nextTask) throws TaskException {
+        if (this.nextTask != null && nextTask instanceof TaskChain) {
+            var taskChain = (TaskChain) nextTask;
+            taskChain.setExecuteNext(TaskPredicateFactory._true());
+            taskChain.assignNextTask(this.nextTask);
+        }
+    }
+
+    private void failOnReplaceActualNextTask() throws TaskException {
+        if(this.getNextTask() != null && this.failOnReplaceActualNextTask.test(this)){
+            throw new TaskException(this, String.format("%s: It is not allowed to replace the next task already assigned: %s"
+                    , this.getName(), this.getNextTask().getName()));
+        }
     }
 
     @Override
     public final void execute() throws TaskException {
         super.execute();
-        if (this.next != null && this.isExecuteNext()) {
-            TaskChain.log.debug("{}: Ejecutando siguiente la tarea de tipo {}", getName(), next.getName());
+        Task localNextTask = this.getNextTask();
+        String name = this.getName();
+        if (this.executeNextTask()) {
+            log.debug("{}: Starting the next task: {}[{}]", name
+                    , localNextTask.getClass().getSimpleName(), localNextTask.getName());
             try {
-                next.execute();
+                localNextTask.execute();
             } catch (TaskException e) {
-                if(isPropagateChainException()) {
+                if(propagateChainException()) {
                     this.setStatus(TaskStatus.FAILED);
                     throw e;
                 } else {
-                    catchNextTaskException(e);
+                    catchChainTaskException(e);
                 }
             } finally {
-                TaskChain.log.debug("{}: Ejecución de la siguiente tarea {} ha finalizado", getName(), next.getName());
+                log.debug("{}: Execution of the following task {} has finished", name, localNextTask.getName());
             }
-        } else if (this.next != null) {
-            TaskChain.log.debug("{}: Esta tarea no ha permitido ejecutar la siguiente tarea {}", getName(), next.getName());
+        } else if (localNextTask != null) {
+            log.debug("{}: This task has not allowed to execute the following task: {}", name, localNextTask.getName());
         } else {
-            TaskChain.log.debug("{}: No hay siguiente tarea para ejecutar", getName());
+            log.debug("{}: There is no next task to run", name);
         }
     }
 
-    protected void catchNextTaskException(TaskException e) {
-        TaskChain.log.debug("{}: Se ha capturado una exception ocurrida en la tarea {}. Error -> {}", getName(), next.getName(), e.getMessage());
+    private boolean propagateChainException() {
+        return this.propagateChainException.test(this.getNextTask());
     }
 
-    protected void onError() {
-        TaskChain.log.debug("{}: Ejecución finalizada con error", getName());
+    private boolean executeNextTask() {
+        Task localNextTask = this.getNextTask();
+        return localNextTask != null && this.executeNext.test(localNextTask);
     }
 
-    protected void onSuccess() {
-        TaskChain.log.debug("{}: Ejecución realizada correctamente", getName());
+    private void catchChainTaskException(TaskException e) {
+        log.debug("{}: An exception occurred in task {} was caught. Error -> {}", this.getName()
+                , this.getNextTask().getName(), e.getMessage());
+        this.catchChainTaskException.accept(e);
     }
 }
