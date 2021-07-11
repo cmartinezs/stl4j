@@ -1,5 +1,5 @@
 # STL4J: Simple Task Library 4 J
-STL4J is **a aimple task library for Java** and gives you a base to be able to execute tasks in a simple way,
+STL4J is **a simple task library for Java** and gives you a base to be able to execute tasks in a simple way,
 whether they are individual, group and/or chain.
 
 ![GitHub](https://img.shields.io/github/license/cmartinezs/stl4j)
