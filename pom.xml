@@ -4,12 +4,36 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cl.cmartinezs</groupId>
+    <groupId>io.github.cmartinezs</groupId>
     <artifactId>stl4j</artifactId>
     <version>0.1.0-alpha.2</version>
+    <packaging>jar</packaging>
+
     <name>Simple Task Library 4 J</name>
     <description>A simple task library for Java gives you a base to be able to execute tasks in a simple way,
         whether they are individual, group and / or chain</description>
+    <url>https://cmartinezs.github.io/stl4j/</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License v3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Carlos Martínez</name>
+            <email>carlos.f.martinez.s@gmail.com</email>
+            <organization>CMartinezs</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/cmartinezs/stl4j.git</connection>
+        <developerConnection>scm:git:ssh://github.com:cmartinezs/stl4j.git</developerConnection>
+        <url>http://github.com/cmartinezs/stl4j/tree/master</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +46,7 @@
         <jacoco.plugin>0.8.7</jacoco.plugin>
 
         <lombok.version>1.18.20</lombok.version>
+        <lombok.delombok.output.dir>target/generated-sources/delombok</lombok.delombok.output.dir>
         <junit.version>5.7.2</junit.version>
         <logback.version>1.2.3</logback.version>
     </properties>
@@ -78,7 +103,96 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.0.0</version>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+                    <outputDirectory>${project.basedir}/${lombok.delombok.output.dir}</outputDirectory>
+                    <addOutputDirectory>false</addOutputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <sourcepath>${project.basedir}/${lombok.delombok.output.dir}</sourcepath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Remove this plugin in case of not using signature in the artifacts -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub cmartinezs Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/cmartinezs/stl4j</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>github</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                </repository>
+                <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/cmartinezs/*</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 
 </project>

@@ -3,7 +3,6 @@ STL4J is **a simple task library for Java** and gives you a base to be able to e
 whether they are individual, group and/or chain.
 
 ![GitHub](https://img.shields.io/github/license/cmartinezs/stl4j)
-[![JitPack](https://jitpack.io/v/cmartinezs/stl4j.svg)](https://jitpack.io/#cmartinezs/stl4j)
 ![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/cmartinezs/stl4j)
 ![GitHub top language](https://img.shields.io/github/languages/top/cmartinezs/stl4j)
 ![GitHub repo file count](https://img.shields.io/github/directory-file-count/cmartinezs/stl4j)
@@ -21,23 +20,45 @@ whether they are individual, group and/or chain.
 ![GitHub watchers](https://img.shields.io/github/watchers/cmartinezs/stl4j?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/cmartinezs/stl4j?style=social)
 ## Installation
-Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J** via [**JitPack**](https://jitpack.io/)
+Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J** via [**GitHub Packages**](https://jitpack.io/)
 1. Add JitPack repository
 ```xml
 <repositories>
     <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/cmartinezs/stl4j</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
     </repository>
 </repositories>
 ```
 2. Add STL4J dependency
 ```xml
 <dependency>
-    <groupId>com.github.cmartinezs</groupId>
+    <groupId>com.cmartinezs</groupId>
     <artifactId>stl4j</artifactId>
-    <version>v0.1.0-alpha.2</version>
+    <version>0.1.0-alpha.2</version>
 </dependency>
+```
+3. You install and configure GPG for the signature of artifacts, or otherwise you do not want to sign, remove the associated plugin configuration in the [pom.xml](pom.xml)
+```xml
+<!-- Remove this plugin in case of not 
+using signature in the artifacts -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-gpg-plugin</artifactId>
+    <version>1.6</version>
+    <executions>
+        <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>sign</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ```
 ## Usage
 ````java
@@ -49,3 +70,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 ## License
 [GNU General Public License v3.0](LICENSE)
+
+## Public GPG key
+Import my public gpg key for validate artifacts
+```bash
+> gpg --keyserver keys.openpgp.org --recv-keys B472CD84127EB71341FFC83D37015A09766E6088
+```
