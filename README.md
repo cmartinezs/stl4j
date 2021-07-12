@@ -36,7 +36,7 @@ Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J
 2. Add STL4J dependency
 ```xml
 <dependency>
-    <groupId>com.cmartinezs</groupId>
+    <groupId>io.github.cmartinezs</groupId>
     <artifactId>stl4j</artifactId>
     <version>0.1.0-alpha.2</version>
 </dependency>
