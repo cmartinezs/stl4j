@@ -41,7 +41,7 @@ Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J
     <version>0.1.0-alpha.2</version>
 </dependency>
 ```
-3. You install and configure GPG for the signature of artifacts, or otherwise you do not want to sign, remove the associated plugin configuration in the [pom.xml](pom.xml)
+3. *Optional*: You install and configure GPG for the signature of artifacts, or otherwise you do not want to sign, remove the associated plugin configuration in the [pom.xml](pom.xml)
 ```xml
 <!-- Remove this plugin in case of not 
 using signature in the artifacts -->
