@@ -21,7 +21,7 @@ whether they are individual, group and/or chain.
 ![GitHub forks](https://img.shields.io/github/forks/cmartinezs/stl4j?style=social)
 ## Installation
 Use the package manager [**Maven**](https://maven.apache.org) to install **STL4J** via [**GitHub Packages**](https://jitpack.io/)
-1. Add JitPack repository
+1. Add GitHub repository
 ```xml
 <repositories>
     <repository>
