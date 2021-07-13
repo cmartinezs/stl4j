@@ -6,7 +6,7 @@
 
     <groupId>io.github.cmartinezs</groupId>
     <artifactId>stl4j</artifactId>
-    <version>0.1.0-alpha.2</version>
+    <version>0.1.0-alpha.1</version>
     <packaging>jar</packaging>
 
     <name>Simple Task Library 4 J</name>
