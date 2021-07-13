@@ -1,5 +1,5 @@
 # STL4J: Simple Task Library 4 J
-STL4J is **a simple task library for Java** and gives you a base to be able to execute tasks in a simple way,
+STL4J is **a simple task library for Java 11+** and gives you a base to be able to execute tasks in a simple way,
 whether they are individual, group and/or chain.
 
 ![GitHub](https://img.shields.io/github/license/cmartinezs/stl4j)
@@ -60,16 +60,37 @@ using signature in the artifacts -->
     </executions>
 </plugin>
 ```
+
+4.- Using the command line
+```bash
+mvn clean install
+```
 ## Usage
 ````java
 // soon
 ````
+## Documentation
+Visit the [online documentation](https://cmartinezs.github.io/stl4j) for the most updated guide
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Please read through our contributing guidelines. 
+Included are directions for opening issues, coding standards, and notes on development.
+
+Pull requests are welcome. 
+For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 ## License
-[GNU General Public License v3.0](LICENSE)
+
+STL4J is an open source project by Carlos Martínez that is licensed under [GNU General Public License v3.0](LICENSE).
+Carlos Martínez reserves the right to change the license of future releases.
+
+|🟢Permissions|🟡Conditions|🔴Limitations|
+|---|---|---|
+|Commercial use|Disclose source|Liability|
+|Distribution|License and copyright notice|Warranty|
+|Modification|Same license||
+|Patent use|State changes||
+|Private use|||
 
 ## Public GPG key
 Import my public gpg key for validate artifacts
