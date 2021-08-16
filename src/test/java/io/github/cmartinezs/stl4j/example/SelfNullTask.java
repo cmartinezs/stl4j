@@ -3,6 +3,8 @@ package io.github.cmartinezs.stl4j.example;
 import io.github.cmartinezs.stl4j.task.AbstractTask;
 import lombok.SneakyThrows;
 
+import java.util.function.BooleanSupplier;
+
 public class SelfNullTask extends AbstractTask {
 
     public SelfNullTask(String name) {
@@ -11,12 +13,16 @@ public class SelfNullTask extends AbstractTask {
 
     public SelfNullTask(String name, boolean executionResult) {
         super(name);
-        this.setSelf(null);
     }
 
     @SneakyThrows
     @Override
     public void execute() {
         super.execute();
+    }
+
+    @Override
+    protected BooleanSupplier selfRegister() {
+        return null;
     }
 }

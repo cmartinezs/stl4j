@@ -2,14 +2,11 @@ package io.github.cmartinezs.stl4j.task.chain;
 
 import io.github.cmartinezs.stl4j.task.AbstractTask;
 import io.github.cmartinezs.stl4j.task.Task;
+import io.github.cmartinezs.stl4j.task.TaskStatus;
 import io.github.cmartinezs.stl4j.task.utils.consumer.TaskExceptionConsumerFactory;
 import io.github.cmartinezs.stl4j.task.utils.exception.TaskException;
-import io.github.cmartinezs.stl4j.task.TaskStatus;
 import io.github.cmartinezs.stl4j.task.utils.predicate.TaskPredicateFactory;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Consumer;
@@ -17,21 +14,17 @@ import java.util.function.Predicate;
 
 @Slf4j
 public abstract class TaskChain extends AbstractTask {
-    @Getter
-    @Setter(AccessLevel.PRIVATE)
+
+    /** The next task. */
     private Task nextTask;
 
-    @Setter @NonNull
-    private transient Predicate<Task> propagateChainException = TaskPredicateFactory._false();
+    private Predicate<Task> propagateChainException = TaskPredicateFactory._false();
 
-    @Setter @NonNull
-    private transient Predicate<Task> failOnReplaceActualNextTask = TaskPredicateFactory._false();
+    private Predicate<Task> failOnReplaceActualNextTask = TaskPredicateFactory._false();
 
-    @Setter @NonNull
-    private transient Predicate<Task> executeNext = TaskPredicateFactory._true();
+    private Predicate<Task> executeNext = TaskPredicateFactory._true();
 
-    @Setter @NonNull
-    private transient Consumer<TaskException> catchChainTaskException = TaskExceptionConsumerFactory.empty();
+    private Consumer<TaskException> catchChainTaskException = TaskExceptionConsumerFactory.empty();
 
     protected TaskChain(String taskName) {
         super(taskName);
@@ -81,11 +74,11 @@ public abstract class TaskChain extends AbstractTask {
             try {
                 localNextTask.execute();
             } catch (TaskException e) {
-                if(propagateChainException()) {
+                if(this.propagateChainException()) {
                     this.setStatus(TaskStatus.FAILED);
                     throw e;
                 } else {
-                    catchChainTaskException(e);
+                    this.catchChainTaskException(e);
                 }
             } finally {
                 log.debug("{}: Execution of the following task {} has finished", name, localNextTask.getName());
@@ -110,5 +103,29 @@ public abstract class TaskChain extends AbstractTask {
         log.debug("{}: An exception occurred in task {} was caught. Error -> {}", this.getName()
                 , this.getNextTask().getName(), e.getMessage());
         this.catchChainTaskException.accept(e);
+    }
+
+    public Task getNextTask() {
+        return this.nextTask;
+    }
+
+    private void setNextTask(@NonNull Task nextTask) {
+        this.nextTask = nextTask;
+    }
+
+    public void setPropagateChainException(@NonNull Predicate<Task> propagateChainException) {
+        this.propagateChainException = propagateChainException;
+    }
+
+    public void setFailOnReplaceActualNextTask(@NonNull Predicate<Task> failOnReplaceActualNextTask) {
+        this.failOnReplaceActualNextTask = failOnReplaceActualNextTask;
+    }
+
+    public void setExecuteNext(@NonNull Predicate<Task> executeNext) {
+        this.executeNext = executeNext;
+    }
+
+    public void setCatchChainTaskException(@NonNull Consumer<TaskException> catchChainTaskException) {
+        this.catchChainTaskException = catchChainTaskException;
     }
 }

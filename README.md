@@ -97,3 +97,6 @@ Import my public gpg key for validate artifacts
 ```bash
 > gpg --keyserver keys.openpgp.org --recv-keys B472CD84127EB71341FFC83D37015A09766E6088
 ```
+## Donate
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?business=7Y28HCP5QRV6N&no_recurring=0&currency_code=USD)

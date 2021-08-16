@@ -1,8 +1,7 @@
-package io.github.cmartinezs.stl4j.utils.exception;
+package io.github.cmartinezs.stl4j.task.utils.exception;
 
 import io.github.cmartinezs.stl4j.example.BooleanTask;
 import io.github.cmartinezs.stl4j.task.Task;
-import io.github.cmartinezs.stl4j.task.utils.exception.TaskException;
 import io.github.cmartinezs.stl4j.task.utils.predicate.TaskPredicateFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
