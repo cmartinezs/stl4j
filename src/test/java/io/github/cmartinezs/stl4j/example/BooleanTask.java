@@ -7,7 +7,7 @@ import java.util.function.BooleanSupplier;
 
 public class BooleanTask extends AbstractTask {
 
-    private boolean executionResult;
+    private final boolean executionResult;
 
     public BooleanTask(String name) {
         this(name, true);

@@ -30,7 +30,7 @@ public abstract class AbstractTask implements Task {
     public static final String TASK_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
 
     /** The task time formatter. */
-    public static final DateTimeFormatter TASK_TIME_FORMATER = DateTimeFormatter.ofPattern(TASK_TIME_PATTERN);
+    public static final DateTimeFormatter TASK_TIME_FORMATTER = DateTimeFormatter.ofPattern(TASK_TIME_PATTERN);
 
     /** The task name. */
     private final String name;
@@ -39,7 +39,7 @@ public abstract class AbstractTask implements Task {
     private TaskStatus status = TaskStatus.CREATED;
 
     /** The task itself that supplies a Boolean result associated with the success or failure of the execution.
-     * By default it corresponds to the supply of the Boolean associated with the successful result. */
+     * By default, it corresponds to the supply of the Boolean associated with the successful result. */
     private BooleanSupplier self = BooleanSupplierFactory._true();
 
     /** The task predicate to determine if an exception should be thrown when there is an error in the execution
@@ -47,15 +47,15 @@ public abstract class AbstractTask implements Task {
     private Predicate<Task> throwOnError = TaskPredicateFactory._false();
 
     /** The task exception function that processes this same task to return a task exception associated with itself.
-     * By default this function performs only and directly the return of what is described above. */
+     * By default, this function performs only and directly the return of what is described above. */
     private Function<Task, TaskException> exceptionOnError = TaskExceptionFunctionFactory.task();
 
     /** The task consumer that is accepted when the boolean supplier {@code self} returns {@code false}.
-     * By default it is a consumer that performs an empty action. */
+     * By default, it is a consumer that performs an empty action. */
     private Consumer<Task> error = TaskConsumerFactory.empty();
 
     /** The task consumer that is accepted when the boolean supplier {@code self} returns {@code true}.
-     * By default it is a consumer that performs an empty action. */
+     * By default, it is a consumer that performs an empty action. */
     private Consumer<Task> success = TaskConsumerFactory.empty();
 
     protected AbstractTask(@NonNull String name) {
@@ -150,9 +150,9 @@ public abstract class AbstractTask implements Task {
      * @return the boolean supplied
      */
     private boolean executeSelf() {
-        log.debug("{}: Starting task at {}", this.getName(), TASK_TIME_FORMATER.format(LocalDateTime.now()));
+        log.debug("{}: Starting task at {}", this.getName(), TASK_TIME_FORMATTER.format(LocalDateTime.now()));
         boolean selfAsBoolean = this.self.getAsBoolean();
-        log.debug("{}: Ending task at {}", this.getName(), TASK_TIME_FORMATER.format(LocalDateTime.now()));
+        log.debug("{}: Ending task at {}", this.getName(), TASK_TIME_FORMATTER.format(LocalDateTime.now()));
         return selfAsBoolean;
     }
 

@@ -67,11 +67,25 @@ public final class TaskGroup extends AbstractTask {
         return () -> {
             log.debug("{}: Executing group of {} tasks", this.getName(), tasks.size());
             this.getTasks().forEach(task -> task.setStatus(TaskStatus.WAITING));
-            StreamUtils.breakableForEach(this.tasks.stream() , breakableTaskConsumer(), breaker -> this.setExecutionCompleted(() -> !breaker.get()));
+            StreamUtils.breakableForEach(this.tasks.stream(), breakableTaskConsumer(), breaker -> this.setExecutionCompleted(() -> !breaker.get()));
+            StreamUtils.breakableForEach(this.tasks.stream(), consumeTask(), task -> this.stopExecutionOnException(task));
             log.debug("{}: The execution of the tasks has been completed", this.getName());
             boolean completed = this.executionCompleted();
             this.setStatus(completed ? TaskStatus.SUCCESS : TaskStatus.FAILED);
             return completed;
+        };
+    }
+
+    private Consumer<Task> consumeTask() {
+        return task -> {
+            try {
+                task.execute();
+            } catch (TaskException e) {
+                log.debug("{}: An exception occurred in task {} was caught. [{}]", this.getName(), task.getName(), e.getMessage());
+                if (this.stopExecutionOnException(task)) {
+                    //stop
+                }
+            }
         };
     }
 
@@ -152,7 +166,7 @@ public final class TaskGroup extends AbstractTask {
 
     /**
      * Gets the task-breaker (bi)consumer. Run a task. In case of exception, it tests the task predicate
-     * {@link this#stopExecutionOnException} with the task that threw the exception, which if it is true,
+     * {@link this#stopExecutionOnException} with the task that threw the exception, which is it being true,
      * stops the {@code breaker}, otherwise it ignores the exception.
      *
      * @see this#selfRegister() 
