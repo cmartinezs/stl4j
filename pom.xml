@@ -48,7 +48,7 @@
         <lombok.version>1.18.20</lombok.version>
         <lombok.delombok.output.dir>target/generated-sources/delombok</lombok.delombok.output.dir>
         <junit.version>5.7.2</junit.version>
-        <logback.version>1.2.3</logback.version>
+        <logback.version>1.2.13</logback.version>
     </properties>
 
     <dependencies>
